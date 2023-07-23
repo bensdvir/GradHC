@@ -65,7 +65,7 @@ def info(str, enable=True):
 # **********************************
 
 class GradHCBasedCluster:
-    def __init__(self, evyat_path,
+    def __init__(self, input_file_path,
                  chosen_technology='minion_idt',
                  q=6, k=3, m=40, L=32, distance_threshold=12,
                  report_func=None, serial=True, export=True):
@@ -80,7 +80,7 @@ class GradHCBasedCluster:
             (in case the sorensen dice similarity was sufficient)
         :param serial: boolean, determines whether to run the whole code serially. otherwise, will
             generate the nubmer sets and the LSH signatures utilizing multiple cores.
-        :param export: boolean, determines whether to export the result as a evyat text file.
+        :param export: boolean, determines whether to export the result as a output text file.
         """
         self.L = L
         self.q = q
@@ -88,10 +88,10 @@ class GradHCBasedCluster:
         self.m = m
         self.top = 4 ** q  # upper boundary for items in numsets
         self.export = export
-        self.evyat_path = evyat_path
+        self.input_file_path = input_file_path
         self.distance_threshold = distance_threshold
         self.chosen_technology = chosen_technology
-        self.temp_evyat_path = self.evyat_path
+        self.temp_input_file_path = self.input_file_path
 
         self.all_reads = []
         self.original_strand_dict = {}  # map from orig strand id to the actual strand
@@ -166,10 +166,10 @@ class GradHCBasedCluster:
         C_org_rev = {}  # C_org_rev = {<line_from_data>: index in self.original_strand_dict}
         strand_id = 0
         rep = None
-        with open(self.evyat_path, 'r') as evyat_f:
-            info("using dataset: {}".format(self.evyat_path))
+        with open(self.input_file_path, 'r') as input_file_f:
+            info("using dataset: {}".format(self.input_file_path))
             prev_line = ''
-            for line in evyat_f:
+            for line in input_file_f:
                 line = line.strip()
                 if line != "":
                     if line[0] == '*':
@@ -659,11 +659,11 @@ class GradHCBasedCluster:
 
     def export_file(self):
         """
-        Prints the result as a evyat.txt file format, to self.temp_evyat_path.
+        Prints the result as an output file with the original format.
         """
         if self.export == False:
             return
-        normalized_input_file_name = os.path.basename(self.temp_evyat_path )
+        normalized_input_file_name = os.path.basename(self.temp_input_file_path )
         temp_output_path = WORKING_DIR_ALGORITHMS + "Results/" + normalized_input_file_name + '_' + ''.join(random.choice(['a','b','c','d']) for i in range(7)) + ".clustering_results"
         temp_output_path = temp_output_path.replace("'", "")
         clusters = [sorted(x) for x in list(self.C_til.values()) if x != []]
@@ -699,9 +699,9 @@ class GradHCBasedCluster:
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-e', '--evyat', type=str, help='evyat path', required=True)
+    parser.add_argument('-i', '--input_file', type=str, help='input_file path', required=True)
     args = parser.parse_args()
-    cluster = GradHCBasedCluster(args.evyat, serial = True)
+    cluster = GradHCBasedCluster(args.input_file, serial = True)
     if not os.path.exists(WORKING_DIR_ALGORITHMS + "Results/"):
         os.makedirs(WORKING_DIR_ALGORITHMS + "Results/")
     print(cluster.run())
