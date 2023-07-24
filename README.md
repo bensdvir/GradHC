@@ -38,7 +38,7 @@ After the clustering successfully finishes, the result can exported as an output
 
 ## How-To
 ```
-usage: GradHC_clustering.py [-h] -i path_to_input_file
+usage: ./GradHC_clustering.py [-h] -i path_to_input_file
 GradHC_clustering.py: error: the following arguments are required: -i/--input_fie
 ```
 The log is printed to the standard output as a default, can be turned off manually (set 'enable' argument to False in the 'info' function). Pay attention in case you redirect the output to a file, since longer runs may result with a heavier log file.
